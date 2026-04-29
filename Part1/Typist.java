@@ -146,7 +146,9 @@ public class Typist
      */
     public void resetToStart()
     {
-
+        progress = 0;
+        burntOut = false;
+        burnoutTurnsRemaining = 0;
     }
 
     /**
@@ -165,7 +167,7 @@ public class Typist
      */
     public void typeCharacter()
     {
-
+        progress++;
     }
 
     /**
@@ -176,7 +178,13 @@ public class Typist
      */
     public void slideBack(int amount)
     {
+        progress = progress - amount;
 
+        // Boundary Check ensuring progress is not below 0
+        if (progress < 0)
+        {
+            progress = 0;
+        }
     }
 
     /**
