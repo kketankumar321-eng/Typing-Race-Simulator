@@ -54,7 +54,14 @@ public class Typist
      */
     public void burnOut(int turns)
     {
-
+        // Ignores invalid inputs e.g. 0 or a negative number shouldn't
+        // put typist to burnout.
+        if (turns <= 0)
+        {
+            return;
+        }
+        this.burntOut = true;
+        this.burnoutTurnsRemaining = turns;
     }
 
     /**
@@ -64,7 +71,20 @@ public class Typist
      */
     public void recoverFromBurnout()
     {
+        // No effect if typist is not burnt out
+        if (!burntOut)
+        {
+            return;
+        }
 
+        burnoutTurnsRemaining--;
+
+        // Typist recovers when counter reaches 0
+        if (burnoutTurnsRemaining <= 0)
+        {
+            burntOut = false;
+            burnoutTurnsRemaining = 0;
+        }
     }
 
     /**
@@ -136,7 +156,7 @@ public class Typist
      */
     public boolean isBurntOut()
     {
-        return burnOut;
+        return burntOut;
     }
 
     /**
