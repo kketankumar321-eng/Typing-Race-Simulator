@@ -1,25 +1,24 @@
 /**
- * Write a description of class Typist here.
- *
+ * Represents each typist in the simulator where the class manages the logic
+ * Including its movement, progress, accuracy and burnouts 
+ * 
  * Starter code generously abandoned by Ty Posaurus, your predecessor,
  * who typed with two fingers and considered that "good enough".
  * He left a sticky note: "the slide-back thing is optional probably".
  * It is not optional. Good luck.
  *
- * @author (your name)
- * @version (a version number or a date)
+ * @author Krish Ketankumar
+ * @version 1.0.1
  */
 public class Typist
 {
     // Fields of class Typist
-    // Hint: you will need six fields. Think carefully about their types.
-    // One of them tracks how far along the passage the typist has reached.
-    // Another tracks whether the typist is currently burnt out.
-    // A third tracks HOW MANY turns of burnout remain (not just whether they are burnt out).
-    // The remaining three should be fairly obvious.
-
-
-
+    private String name; // Typist's name
+    private char symbol; // Symbol used to represent the typist on screen
+    private int progress; // How far they have reached in the passage
+    private boolean burntOut; // If typist is burnt out or not
+    private int burnoutTurnsRemaining; // How many burnout turns are left
+    private double accuracy; // The typist's accuracy rating (0.0 - 1.0)
 
     // Constructor of class Typist
     /**
@@ -32,7 +31,16 @@ public class Typist
      */
     public Typist(char typistSymbol, String typistName, double typistAccuracy)
     {
+        this.symbol = typistSymbol;
+        this.name = typistName;
 
+        // Uses setAccuracy to ensure the value is valid (0.0–1.0 range),
+        // Even when an out of range value is passed to the constructor.
+        setAccuracy(typistAccuracy);
+
+        this.progress = 0;
+        this.burntOut = false;
+        this.burnoutTurnsRemaining = 0;
     }
 
 
