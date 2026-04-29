@@ -1,6 +1,6 @@
 /**
- * Represents each typist in the simulator where the class manages the logic
- * Including its movement, progress, accuracy and burnouts 
+ * Represents each typist in the simulator where the class manages the logic,
+ * which includes its movement, progress, accuracy and burnouts 
  * 
  * Starter code generously abandoned by Ty Posaurus, your predecessor,
  * who typed with two fingers and considered that "good enough".
@@ -35,7 +35,7 @@ public class Typist
         this.name = typistName;
 
         // Uses setAccuracy to ensure the value is valid (0.0–1.0 range),
-        // Even when an out of range value is passed to the constructor.
+        // even when an out of range value is passed to the constructor.
         setAccuracy(typistAccuracy);
 
         this.progress = 0;
@@ -74,7 +74,7 @@ public class Typist
      */
     public double getAccuracy()
     {
-        return 0.0; // placeholder - replace with correct implementation
+        return accuracy;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Typist
      */
     public int getProgress()
     {
-        return 0; // placeholder - replace with correct implementation
+        return progress;
     }
 
     /**
@@ -96,7 +96,7 @@ public class Typist
      */
     public String getName()
     {
-        return ""; // placeholder - replace with correct implementation
+        return name;
     }
 
     /**
@@ -106,7 +106,7 @@ public class Typist
      */
     public char getSymbol()
     {
-        return ' '; // placeholder - replace with correct implementation
+        return symbol;
     }
 
     /**
@@ -117,7 +117,7 @@ public class Typist
      */
     public int getBurnoutTurnsRemaining()
     {
-        return 0; // placeholder - replace with correct implementation
+        return burnoutTurnsRemaining;
     }
 
     /**
@@ -136,7 +136,7 @@ public class Typist
      */
     public boolean isBurntOut()
     {
-        return false; // placeholder - replace with correct implementation
+        return burnOut;
     }
 
     /**
@@ -167,7 +167,20 @@ public class Typist
      */
     public void setAccuracy(double newAccuracy)
     {
-
+        // Out of range values will be clamped to the valid range (0.0 - 1.0),
+        // to ensure no out of bound values are stored (e.g. -0.7 or 1.2).
+        if (newAccuracy < 0.0)
+        {
+            this.accuracy = 0.0;
+        }
+        else if (newAccuracy > 1.0)
+        {
+            this.accuracy = 1.0;
+        }
+        else
+        {
+            this.accuracy = newAccuracy;
+        }
     }
 
     /**
@@ -177,7 +190,7 @@ public class Typist
      */
     public void setSymbol(char newSymbol)
     {
-
+        this.symbol = newSymbol;
     }
 
 }
