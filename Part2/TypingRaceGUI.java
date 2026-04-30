@@ -124,4 +124,18 @@ public class TypingRaceGUI
     {
         new TypingRaceGUI().startRaceGUI();
     }
+
+
+    /**
+     * Builds a border with a title that uses the colour palette and a bold font.
+     * Used by every header on the setup window.
+     */
+    private javax.swing.border.Border styledBorder(String title)
+    {
+        return BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(BORDER_COLOUR, 1), title,
+            javax.swing.border.TitledBorder.LEFT,
+            javax.swing.border.TitledBorder.TOP,
+            new Font("Arial", Font.BOLD, 13), TEXT_COLOUR);
+    }
 }
