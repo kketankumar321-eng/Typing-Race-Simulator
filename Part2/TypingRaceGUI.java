@@ -578,4 +578,150 @@ public class TypingRaceGUI
         laneContainer.revalidate();
         laneContainer.repaint();
     }
+
+    // One turn of the race
+
+    /**
+     * Processes on turn of the race every time the timer ticks.
+     * Moves the typists, updates the window and checks winner
+     */
+    private void doOneTurn()
+    {
+        turnCount++;
+
+        // Resets the mistype flags every turn
+        for (int i = 0; i < mistypedThisTurn.size(); i++)
+        {
+            mistypedThisTurn.set(i, false);
+        }
+
+        // Moves every typist
+        for (int i = 0; i < typists.size(); i++)
+        {
+            if (finishOrder.contains(i)) continue;
+            advanceOne(i);
+        }
+
+        refreshLanes();
+
+        // Checks to see if anyone has finished in this turn
+        for (int i = 0; i < typists.size(); i++)
+        {
+            if (typists.get(i).getProgress() >= passageText.length()
+                && !finishOrder.contains(i))
+            {
+                finishOrder.add(i);
+
+                // If they are a winner, they will gain an accuracy boost
+                if (finishOrder.size() == 1)
+                {
+                    Typist w = typists.get(i);
+                    w.setAccuracy(w.getAccuracy() + WIN_ACCURACY_BOOST);
+                }
+            }
+        }
+
+        // Once the first person finishes race ends 
+        if (finishOrder.size() >= 1)
+        {
+            for (int i = 0; i < typists.size(); i++)
+            {
+                if (!finishOrder.contains(i))
+                {
+                    // Adds everyone else to the list
+                    int insertAt = finishOrder.size();
+                    for (int j = 1; j < finishOrder.size(); j++)
+                    {
+                        if (typists.get(i).getProgress()
+                            > typists.get(finishOrder.get(j)).getProgress())
+                        {
+                            insertAt = j;
+                            break;
+                        }
+                    }
+                    finishOrder.add(insertAt, i);
+                }
+            }
+
+            // Stop the race timer to show the progress bars for short time
+            raceTimer.stop();
+            Timer pause = new Timer(700, e -> showResultsAndReturn());
+            pause.setRepeats(false);
+            pause.start();
+        }
+    }
+
+    /**
+     * Handles the maths for each typist's turn
+     * Deals with typing speed, mistypes, burnout risks
+     */
+    private void advanceOne(int i)
+    {
+        Typist t = typists.get(i);
+
+        // If they are burnt out, they will wait and recover
+        if (t.isBurntOut())
+        {
+            t.recoverFromBurnout();
+            return;
+        }
+
+        // Keeps track of how many time they have tried to type
+        attempts.set(i, attempts.get(i) + 1);
+
+        // Caffeine modifier which gives boost for 10 rounds
+        double effectiveAcc = t.getAccuracy();
+        if (caffeineOn && turnCount <= 10)
+        {
+            effectiveAcc += 0.10;
+        }
+        // Keeps accuracy between 0 and 1
+        if (effectiveAcc > 1.0) effectiveAcc = 1.0;
+        if (effectiveAcc < 0.0) effectiveAcc = 0.0;
+
+        // Attempts to type a character
+        if (Math.random() < effectiveAcc)
+        {
+            t.typeCharacter();
+        }
+
+        // Mistype Logic checked + noise cancelling headphones debuff
+        double mistypeChance = (1.0 - t.getAccuracy()) * MISTYPE_BASE_CHANCE;
+        if (accessoriesList.get(i).equals("Noise-Cancel HP"))
+        {
+            mistypeChance *= 0.5;
+        }
+
+        if (Math.random() < mistypeChance)
+        {
+            // Autocorrect halves the slide back distance
+            int slide = SLIDE_BACK_AMOUNT;
+            if (autocorrectOn) slide = slide / 2;
+            t.slideBack(slide);
+            mistypes.set(i, mistypes.get(i) + 1);
+            mistypedThisTurn.set(i, true);
+        }
+
+        // Burnout check
+        double burnoutChance = 0.05 * t.getAccuracy() * t.getAccuracy();
+        if (caffeineOn && turnCount > 10)
+        {
+            // After the caffeine boost wears off, burnout risk doubles.
+            burnoutChance *= 2.0;
+        }
+
+        if (Math.random() < burnoutChance)
+        {
+            // Wrist Support shortens burnout by one turn
+            int duration = BURNOUT_DURATION;
+            if (accessoriesList.get(i).equals("Wrist Support"))
+            {
+                duration--;
+            }
+            if (duration < 1) duration = 1;
+            t.burnOut(duration);
+            t.setAccuracy(t.getAccuracy() - BURNOUT_ACCURACY_DROP);
+            burnouts.set(i, burnouts.get(i) + 1);
+        }
+    }
 }
