@@ -771,4 +771,122 @@ public class TypingRaceGUI
                 + "  (Acc: " + String.format("%.2f", t.getAccuracy()) + ")");
         }
     }
+
+    // Results popup window
+
+    /**
+     * Builds the results table, and updates the overall leaderboard,
+     * and shows a popup when the race ends
+     */
+    private void showResultsAndReturn()
+    {
+        // Calculates how long the race took in minutes
+        long elapsedMs = System.currentTimeMillis() - raceStartMs;
+        double minutes = elapsedMs / 60000.0;
+
+        // Using StringBuilder and String.format to make a neat table
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Race Results ===\n\n");
+        sb.append(String.format("%-4s %-12s %-7s %-7s %-9s %s%n",
+            "Pos", "Name", "WPM", "Acc%", "Burnouts", "Earnings"));
+        sb.append("-----------------------------------------------------\n");
+
+        for (int rank = 0; rank < finishOrder.size(); rank++)
+        {
+            int idx = finishOrder.get(rank);
+            int pos = rank + 1;
+            Typist t = typists.get(idx);
+
+            // Calculates Words Per Minute (WPM)
+            double wpm = 0;
+            if (minutes > 0)
+            {
+                wpm = (passageText.length() / 5.0) / minutes;
+            }
+
+            // Calculating accuracy percentage with validation
+            int att = attempts.get(idx);
+            int mis = mistypes.get(idx);
+            double acc = 0;
+            if (att > 0)
+            {
+                acc = (1.0 - (double) mis / att) * 100.0;
+            }
+            if (acc < 0) acc = 0;
+            if (acc > 100) acc = 100;
+
+            // Getting the coins and leaderboard points for the typist
+            int earned = computeEarnings(idx, pos, wpm);
+            int points = computePoints(pos, burnouts.get(idx));
+
+            updateLeaderboard(t.getName(), points, earned);
+
+            // Adds the typists stats to the result table
+            sb.append(String.format("%-4d %-12s %-7.1f %-7.1f %-9d %d coins%n",
+                pos, trim(t.getName(), 12), wpm, acc, burnouts.get(idx), earned));
+        }
+
+        sb.append("\n=== Global Leaderboard ===\n\n");
+        sb.append(buildLeaderboardText());
+
+        // Builds a text area for the results
+        JTextArea resultsArea = new JTextArea(sb.toString());
+        resultsArea.setEditable(false);
+        resultsArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        resultsArea.setBackground(BG_COLOUR);
+        resultsArea.setForeground(TEXT_COLOUR);
+        resultsArea.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+
+        JOptionPane.showMessageDialog(frame, resultsArea,
+            "Race Finished", JOptionPane.INFORMATION_MESSAGE);
+
+        // Switches back to the setup window
+        frame.setContentPane(setupPanel);
+        frame.setSize(950, 720);
+        frame.setLocationRelativeTo(null);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    /** 
+     * handles the amount of coin earnings including 
+     * a bonus for speed, but a penalty for burning out.
+     */
+    private int computeEarnings(int idx, int pos, double wpm)
+    {
+        // Prize money for each position
+        int coins;
+        if (pos == 1) coins = 100;
+        else if (pos == 2) coins = 60;
+        else if (pos == 3) coins = 30;
+        else coins = 10;
+
+        // Speed bonus and burnout penalty
+        if (wpm > 50) coins += 25;
+        if (burnouts.get(idx) > 0) coins -= 10 * burnouts.get(idx);
+        if (coins < 0) coins = 0;
+
+        // Sponsor bonus
+        String sp = sponsorsList.get(idx);
+        if (sp.startsWith("KeyCorp") && burnouts.get(idx) == 0) coins += 50;
+        if (sp.startsWith("TypeFast") && pos == 1) coins += 100;
+
+        return coins;
+    }
+
+    /** 
+     * Handles the leaderboard points.
+     * 3 for 1st, 2 for 2nd, and 1 for 3rd.
+     */
+    private int computePoints(int pos, int b)
+    {
+        int p = 0;
+        if (pos == 1) p = 3;
+        else if (pos == 2) p = 2;
+        else if (pos == 3) p = 1;
+
+        if (b > 0) p--;
+        if (p < 0) p = 0;
+        return p;
+    }
 }
