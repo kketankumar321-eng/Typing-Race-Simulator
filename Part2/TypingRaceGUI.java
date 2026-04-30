@@ -302,11 +302,11 @@ public class TypingRaceGUI
         topRow.add(new JLabel("Name: "));
         topRow.add(nameFields[i]);
         topRow.add(Box.createHorizontalStrut(10));
-        topRow.add(new JLabel("Acc: "));
-        topRow.add(accuracyFields[i]);
-        topRow.add(Box.createHorizontalStrut(10));
         topRow.add(new JLabel("Symbol: "));
         topRow.add(symbolFields[i]);
+        topRow.add(Box.createHorizontalStrut(10));
+        topRow.add(new JLabel("Acc: "));
+        topRow.add(accuracyFields[i]);
         topRow.add(Box.createHorizontalStrut(10));
         topRow.add(new JLabel("Colour: "));
         topRow.add(colorBoxes[i]);
@@ -579,7 +579,7 @@ public class TypingRaceGUI
                 BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             lane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
-            JLabel nameLabel = new JLabel(t.getSymbol() + " " + t.getName()
+            JLabel nameLabel = new JLabel(t.getSymbol() + "   " + t.getName()
                 + "  (Acc: " + String.format("%.2f", t.getAccuracy()) + ")");
             nameLabel.setPreferredSize(new Dimension(220, 24));
             nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
@@ -797,7 +797,7 @@ public class TypingRaceGUI
             statusLabels.get(i).setText(status);
 
             // Refreshes the accuracy text whenever it changes
-            nameLabels.get(i).setText(t.getSymbol() + " " + t.getName()
+            nameLabels.get(i).setText(t.getSymbol() + "   " + t.getName()
                 + "  (Acc: " + String.format("%.2f", t.getAccuracy()) + ")");
         }
     }
