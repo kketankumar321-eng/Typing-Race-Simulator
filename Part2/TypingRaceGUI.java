@@ -138,4 +138,107 @@ public class TypingRaceGUI
             javax.swing.border.TitledBorder.TOP,
             new Font("Arial", Font.BOLD, 13), TEXT_COLOUR);
     }
+
+    // Setup Window
+    private JPanel buildSetupPanel()
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.setBackground(BG_COLOUR);
+
+        // Title and mini description
+        JLabel title = new JLabel("Typing Race Simulator");
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(TEXT_COLOUR);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitle = new JLabel("Configure your race below, then start typing!");
+        subtitle.setFont(new Font("Arial", Font.ITALIC, 13));
+        subtitle.setForeground(BUTTON_COLOUR);
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel titleBlock = new JPanel();
+        titleBlock.setLayout(new BoxLayout(titleBlock, BoxLayout.Y_AXIS));
+        titleBlock.setOpaque(false);
+        titleBlock.add(title);
+        titleBlock.add(Box.createVerticalStrut(2));
+        titleBlock.add(subtitle);
+        titleBlock.add(Box.createVerticalStrut(10));
+
+        JPanel titleRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        titleRow.setOpaque(false);
+        titleRow.add(titleBlock);
+        panel.add(titleRow);
+
+        // Passage section
+        JPanel passageRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        passageRow.setBorder(styledBorder("1. Passage"));
+        passageRow.setBackground(BG_COLOUR);
+        passageDropdown = new JComboBox<String>(new String[] { "Short", "Medium", "Long", "Custom" });
+        passageDropdown.addActionListener(e -> updatePassageField());
+        passageField = new JTextField("The quick brown fox jumps over the lazy dog.", 35);
+        passageRow.add(new JLabel("Choose:"));
+        passageRow.add(passageDropdown);
+        passageRow.add(passageField);
+        panel.add(passageRow);
+
+        // Modifiers section
+        JPanel modRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        modRow.setBorder(styledBorder("2. Modifiers"));
+        modRow.setBackground(BG_COLOUR);
+        autocorrectBox = new JCheckBox("Autocorrect");
+        caffeineBox = new JCheckBox("Caffeine Mode");
+        nightShiftBox = new JCheckBox("Night Shift");
+        autocorrectBox.setOpaque(false);
+        caffeineBox.setOpaque(false);
+        nightShiftBox.setOpaque(false);
+        modRow.add(autocorrectBox);
+        modRow.add(caffeineBox);
+        modRow.add(nightShiftBox);
+        panel.add(modRow);
+
+        // Typist count
+        JPanel countRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        countRow.setBorder(styledBorder("3. Number of Typists"));
+        countRow.setBackground(BG_COLOUR);
+        typistCountDropdown = new JComboBox<Integer>(new Integer[] { 2, 3, 4, 5, 6 });
+        typistCountDropdown.setSelectedItem(3);
+        typistCountDropdown.addActionListener(e -> updateSeatVisibility());
+        countRow.add(new JLabel("How many?"));
+        countRow.add(typistCountDropdown);
+        panel.add(countRow);
+
+        // Seat rows
+        JPanel seatsPanel = new JPanel();
+        seatsPanel.setLayout(new BoxLayout(seatsPanel, BoxLayout.Y_AXIS));
+        seatsPanel.setBorder(styledBorder("4. Typists"));
+        seatsPanel.setBackground(BG_COLOUR);
+        for (int i = 0; i < MAX_TYPISTS; i++)
+        {
+            seatRows[i] = buildSeatRow(i);
+            seatsPanel.add(seatRows[i]);
+        }
+        panel.add(seatsPanel);
+
+        // Start button
+        JButton startButton = new JButton("Start Race");
+        startButton.setFont(new Font("Arial", Font.BOLD, 16));
+        startButton.setBackground(BUTTON_COLOUR);
+        startButton.setForeground(Color.WHITE);
+        startButton.setFocusPainted(false);
+        startButton.setPreferredSize(new Dimension(160, 38));
+        startButton.addActionListener(e -> tryStartRace());
+
+        JPanel startRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        startRow.setOpaque(false);
+        startRow.add(startButton);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(startRow);
+
+        // Hides unused seats based on the typist count
+        updateSeatVisibility();
+
+        return panel;
+    }
 }
