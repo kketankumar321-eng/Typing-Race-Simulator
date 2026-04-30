@@ -39,7 +39,10 @@ public class TypingRaceGUI
     private static final Color BORDER_COLOUR = new Color(0x93, 0xB1, 0xB5);
     private static final Color BG_COLOUR = new Color(0xB8, 0xE3, 0xE9);
 
-    private static final Color[] LANE_COLORS = {Color.RED, Color.BLUE, new Color(0, 150, 0),
+    private static final String[] COLOR_NAMES =
+        {"Red", "Blue", "Green", "Orange", "Purple", "Cyan"};
+    private static final Color[] LANE_COLORS =
+        {Color.RED, Color.BLUE, new Color(0, 150, 0),
           Color.ORANGE, new Color(150, 0, 200), Color.CYAN};
 
     // Main windows
@@ -60,6 +63,8 @@ public class TypingRaceGUI
     private JPanel[] seatRows = new JPanel[MAX_TYPISTS];
     private JTextField[] nameFields = new JTextField[MAX_TYPISTS];
     private JTextField[] accuracyFields = new JTextField[MAX_TYPISTS];
+    private JTextField[] symbolFields = new JTextField[MAX_TYPISTS];
+    private JComboBox<String>[] colorBoxes = new JComboBox[MAX_TYPISTS];
     private JComboBox<String>[] styleBoxes = new JComboBox[MAX_TYPISTS];
     private JComboBox<String>[] keyboardBoxes = new JComboBox[MAX_TYPISTS];
     private JComboBox<String>[] accessoryBoxes = new JComboBox[MAX_TYPISTS];
@@ -263,6 +268,8 @@ public class TypingRaceGUI
         // Sets up the text boxes and dropdown menus
         nameFields[i] = new JTextField("Typist" + (i + 1));
         accuracyFields[i] = new JTextField("0.7");
+        symbolFields[i] = new JTextField(String.valueOf((char)('1' + i)));
+        colorBoxes[i] = new JComboBox<String>(COLOR_NAMES);
         styleBoxes[i] = new JComboBox<String>(STYLES);
         keyboardBoxes[i] = new JComboBox<String>(KEYBOARDS);
         accessoryBoxes[i] = new JComboBox<String>(ACCESSORIES);
@@ -277,6 +284,9 @@ public class TypingRaceGUI
         keyboardBoxes[i].setMaximumSize(new Dimension(160, 26));
         accessoryBoxes[i].setMaximumSize(new Dimension(170, 26));
         sponsorBoxes[i].setMaximumSize(new Dimension(220, 26));
+        symbolFields[i].setPreferredSize(new Dimension(40, 26));
+        symbolFields[i].setMaximumSize(new Dimension(40, 26));
+        colorBoxes[i].setMaximumSize(new Dimension(100, 26));
 
         // Top row which includes seat label + name + accuracy
         JPanel topRow = new JPanel();
@@ -291,9 +301,15 @@ public class TypingRaceGUI
         topRow.add(seatLabel);
         topRow.add(new JLabel("Name: "));
         topRow.add(nameFields[i]);
-        topRow.add(Box.createHorizontalStrut(16));
-        topRow.add(new JLabel("Accuracy: "));
+        topRow.add(Box.createHorizontalStrut(10));
+        topRow.add(new JLabel("Acc: "));
         topRow.add(accuracyFields[i]);
+        topRow.add(Box.createHorizontalStrut(10));
+        topRow.add(new JLabel("Symbol: "));
+        topRow.add(symbolFields[i]);
+        topRow.add(Box.createHorizontalStrut(10));
+        topRow.add(new JLabel("Colour: "));
+        topRow.add(colorBoxes[i]);
         topRow.add(Box.createHorizontalGlue());
 
         // Bottom row which includes the 4 dropdown options
@@ -421,12 +437,24 @@ public class TypingRaceGUI
             }
 
             // Using the seat number 1-6 as the same symbol on the window
-            char symbol = (char) ('1' + i);
+            String symbolText = symbolFields[i].getText().trim();
+            char symbol;
+            if (symbolText.length() == 1)
+            {
+                symbol = symbolText.charAt(0);
+            }
+            else
+            {
+                symbol = (char) ('1' + i);
+            }
+
             Typist t = new Typist(symbol, name, accuracy);
 
             typists.add(t);
             accessoriesList.add((String) accessoryBoxes[i].getSelectedItem());
             sponsorsList.add((String) sponsorBoxes[i].getSelectedItem());
+
+            
             burnouts.add(0);
             mistypes.add(0);
             attempts.add(0);
@@ -543,9 +571,11 @@ public class TypingRaceGUI
             // Each lane is a white frame with the typist's colour as the left border.
             JPanel lane = new JPanel(new BorderLayout(10, 4));
             lane.setBackground(Color.WHITE);
+            int colorIdx = colorBoxes[i].getSelectedIndex();
+            Color laneColor = LANE_COLORS[colorIdx];
+
             lane.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 5, 0, 0,
-                    LANE_COLORS[i % LANE_COLORS.length]),
+                BorderFactory.createMatteBorder(0, 5, 0, 0, laneColor),
                 BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             lane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
@@ -560,7 +590,7 @@ public class TypingRaceGUI
             JProgressBar bar = new JProgressBar(0, max);
             bar.setValue(0);
             bar.setStringPainted(true);
-            bar.setForeground(LANE_COLORS[i % LANE_COLORS.length]);
+            bar.setForeground(laneColor);
             bar.setBackground(new Color(240, 245, 245));
             lane.add(bar, BorderLayout.CENTER);
             progressBars.add(bar);
@@ -888,5 +918,84 @@ public class TypingRaceGUI
         if (b > 0) p--;
         if (p < 0) p = 0;
         return p;
+    }
+
+    // Leaderboard
+
+    /**
+     * Adds the points and coins form the current race to leaderboard
+     * For Existing names, coins will be added to their total 
+     */
+    private void updateLeaderboard(String name, int points, int coins)
+    {
+        int idx = leaderboardNames.indexOf(name);
+        if (idx < 0)
+        {
+            // First time they have raced
+            leaderboardNames.add(name);
+            leaderboardPoints.add(points);
+            leaderboardCoins.add(coins);
+        }
+        else
+        {
+            // Typist has raced before (updates their scores)
+            leaderboardPoints.set(idx, leaderboardPoints.get(idx) + points);
+            leaderboardCoins.set(idx, leaderboardCoins.get(idx) + coins);
+        }
+    }
+
+    /**
+     * Builds the text table for the leaderboard
+     * Sorts typist with the most points
+     */
+    private String buildLeaderboardText()
+    {
+        // Start with a list of numbers [0, 1, 2...] representing typists
+        ArrayList<Integer> order = new ArrayList<Integer>();
+        for (int i = 0; i < leaderboardNames.size(); i++)
+        {
+            order.add(i);
+        }
+
+        // Sorts by points
+        for (int i = 0; i < order.size(); i++)
+        {
+            int best = i;
+            for (int j = i + 1; j < order.size(); j++)
+            {
+                if (leaderboardPoints.get(order.get(j))
+                    > leaderboardPoints.get(order.get(best)))
+                {
+                    best = j;
+                }
+            }
+            int tmp = order.get(i);
+            order.set(i, order.get(best));
+            order.set(best, tmp);
+        }
+
+        // Builds the text table using sorted order
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%-4s %-12s %-7s %s%n",
+            "Rank", "Name", "Points", "Coins"));
+        sb.append("--------------------------------------\n");
+        for (int rank = 0; rank < order.size(); rank++)
+        {
+            int i = order.get(rank);
+            sb.append(String.format("%-4d %-12s %-7d %d%n",
+                rank + 1, trim(leaderboardNames.get(i), 12),
+                leaderboardPoints.get(i), leaderboardCoins.get(i)));
+        }
+        return sb.toString();
+    }
+
+    // Cuts strings down so it can fit into tables
+    private String trim(String s, int len)
+    {
+        if (s.length() <= len)
+        {
+            return s;
+        }
+        return s.substring(0, len);
     }
 }
