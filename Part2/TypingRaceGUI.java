@@ -251,7 +251,7 @@ public class TypingRaceGUI
     private JPanel buildSeatRow(int i)
     {
         // Outer panel with two rows inside with
-        // a line at the bottom for seperation
+        // a line at the bottom for seperation.
         JPanel seat = new JPanel();
         seat.setLayout(new BoxLayout(seat, BoxLayout.Y_AXIS));
         seat.setBorder(BorderFactory.createCompoundBorder(
@@ -319,5 +319,39 @@ public class TypingRaceGUI
         seat.add(topRow);
         seat.add(bottomRow);
         return seat;
+    }
+
+    /**
+     * When the user changes the passage dropdown, it will
+     * fill the text field with a predefined passage
+     * Picking "Custom" allows user to type anything.
+     */
+    private void updatePassageField()
+    {
+        String choice = (String) passageDropdown.getSelectedItem();
+        if (choice.equals("Short"))
+        {
+            passageField.setText("The quick brown fox jumps over the lazy dog.");
+        }
+        else if (choice.equals("Medium"))
+        {
+            passageField.setText("Programming is the art of telling another human "
+                + "being what one wants the computer to do.");
+        }
+        else if (choice.equals("Long"))
+        {
+            passageField.setText("It is a truth universally acknowledged that a "
+                + "single man in possession of a good fortune must be in want of a wife.");
+        }
+    }
+
+    // Shows the seat rows and hides the rest based on the count dropdown
+    private void updateSeatVisibility()
+    {
+        int count = (Integer) typistCountDropdown.getSelectedItem();
+        for (int i = 0; i < MAX_TYPISTS; i++)
+        {
+            seatRows[i].setVisible(i < count);
+        }
     }
 }
