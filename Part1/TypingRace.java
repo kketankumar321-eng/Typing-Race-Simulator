@@ -25,6 +25,7 @@ public class TypingRace
     private static final int    SLIDE_BACK_AMOUNT   = 2;
     private static final int    BURNOUT_DURATION     = 3;
 
+
     /**
      * Constructor for objects of class TypingRace.
      * Sets up the race with a passage of the given length.
@@ -76,7 +77,9 @@ public class TypingRace
      */
     public void startRace()
     {
+        final double WIN_ACCURACY_RISE = 0.02;
         boolean finished = false;
+        Typist winner = null;
 
         // Reset all typists to the start of the passage
         seat1Typist.resetToStart();
@@ -105,10 +108,6 @@ public class TypingRace
             } catch (Exception e) {}
         }
 
-        // TODO (Task 2a): Print the winner's name here
-
-        Typist winner = null;
-
         // Stores and announces the winner once the race ends 
         if (raceFinishedBy(seat1Typist))
         {
@@ -125,8 +124,13 @@ public class TypingRace
 
         if (winner != null) 
         {
+            // Adjustment to winner Typist's accuracy value  
+            double oldAccuracy = winner.getAccuracy;
+            winner.setAccuracy(oldAccuracy + WIN_ACCURACY_RISE);
+
             System.out.println()
             System.out.println("And the winner is... " + winner.getName() + "!");
+            System.out.println("Final accuracy: " + winner.getAccuracy() + " (improved from " + oldAccuracy + ")");
         }
     }
 
