@@ -241,4 +241,83 @@ public class TypingRaceGUI
 
         return panel;
     }
+
+    /**
+     * Builds a single row for one typist.
+     * Each row is a small panel containing 2 horizontal rows 
+     * containing two horizontal rows where the top row has the seat label,
+     * name and accuracy fields, and the bottom row has the four dropdowns.
+     */
+    private JPanel buildSeatRow(int i)
+    {
+        // Outer panel with two rows inside with
+        // a line at the bottom for seperation
+        JPanel seat = new JPanel();
+        seat.setLayout(new BoxLayout(seat, BoxLayout.Y_AXIS));
+        seat.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOUR),
+            BorderFactory.createEmptyBorder(6, 4, 6, 4)));
+        seat.setBackground(COLOR_BG);
+        seat.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
+
+        // Sets up the text boxes and dropdown menus
+        nameFields[i] = new JTextField("Typist" + (i + 1));
+        accuracyFields[i] = new JTextField("0.7");
+        styleBoxes[i] = new JComboBox<String>(STYLES);
+        keyboardBoxes[i] = new JComboBox<String>(KEYBOARDS);
+        accessoryBoxes[i] = new JComboBox<String>(ACCESSORIES);
+        sponsorBoxes[i] = new JComboBox<String>(SPONSORS);
+
+        // All sizes are adjusted to make it alligned
+        nameFields[i].setPreferredSize(new Dimension(180, 26));
+        nameFields[i].setMaximumSize(new Dimension(180, 26));
+        accuracyFields[i].setPreferredSize(new Dimension(60, 26));
+        accuracyFields[i].setMaximumSize(new Dimension(60, 26));
+        styleBoxes[i].setMaximumSize(new Dimension(160, 26));
+        keyboardBoxes[i].setMaximumSize(new Dimension(160, 26));
+        accessoryBoxes[i].setMaximumSize(new Dimension(170, 26));
+        sponsorBoxes[i].setMaximumSize(new Dimension(220, 26));
+
+        // Top row which includes seat label + name + accuracy
+        JPanel topRow = new JPanel();
+        topRow.setLayout(new BoxLayout(topRow, BoxLayout.X_AXIS));
+        topRow.setOpaque(false);
+
+        JLabel seatLabel = new JLabel("Seat " + (i + 1));
+        seatLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        seatLabel.setForeground(TEXT_COLOUR);
+        seatLabel.setPreferredSize(new Dimension(60, 26));
+
+        topRow.add(seatLabel);
+        topRow.add(new JLabel("Name: "));
+        topRow.add(nameFields[i]);
+        topRow.add(Box.createHorizontalStrut(16));
+        topRow.add(new JLabel("Accuracy: "));
+        topRow.add(accuracyFields[i]);
+        topRow.add(Box.createHorizontalGlue());
+
+        // Bottom row which includes the 4 dropdown options
+        JPanel bottomRow = new JPanel();
+        bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.X_AXIS));
+        bottomRow.setOpaque(false);
+        bottomRow.setBorder(BorderFactory.createEmptyBorder(4, 60, 0, 0));
+
+        bottomRow.add(new JLabel("Style: "));
+        bottomRow.add(styleBoxes[i]);
+        bottomRow.add(Box.createHorizontalStrut(10));
+        bottomRow.add(new JLabel("Keyboard: "));
+        bottomRow.add(keyboardBoxes[i]);
+        bottomRow.add(Box.createHorizontalStrut(10));
+        bottomRow.add(new JLabel("Accessory: "));
+        bottomRow.add(accessoryBoxes[i]);
+        bottomRow.add(Box.createHorizontalStrut(10));
+        bottomRow.add(new JLabel("Sponsor: "));
+        bottomRow.add(sponsorBoxes[i]);
+        bottomRow.add(Box.createHorizontalGlue());
+
+        // Adds both rows to the main seat window
+        seat.add(topRow);
+        seat.add(bottomRow);
+        return seat;
+    }
 }
