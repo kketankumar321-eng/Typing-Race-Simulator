@@ -724,4 +724,51 @@ public class TypingRaceGUI
             burnouts.set(i, burnouts.get(i) + 1);
         }
     }
+
+    /** 
+     * This method refreshes the screen every turn so the progress bars 
+     * and status labels stay up to date
+     */
+    private void refreshLanes()
+    {
+        // Updates the turns counter
+        turnLabel.setText("Turn: " + turnCount);
+
+        int max = passageText.length();
+        for (int i = 0; i < typists.size(); i++)
+        {
+            Typist t = typists.get(i);
+
+            // Gets the current progress and ensures it doesnt go past the end
+            int p = t.getProgress();
+            if (p > max) p = max;
+
+            // Updates the progress bar and the text
+            progressBars.get(i).setValue(p);
+            progressBars.get(i).setString(p + " / " + max);
+
+            // Checks what status message to show 
+            String status;
+            if (t.isBurntOut())
+            {
+                status = "BURNT OUT (" + t.getBurnoutTurnsRemaining() + ")";
+                statusLabels.get(i).setForeground(Color.RED);
+            }
+            else if (mistypedThisTurn.get(i))
+            {
+                status = "[mistype]";
+                statusLabels.get(i).setForeground(new Color(180, 100, 0));
+            }
+            else
+            {
+                status = " ";
+                statusLabels.get(i).setForeground(Color.DARK_GRAY);
+            }
+            statusLabels.get(i).setText(status);
+
+            // Refreshes the accuracy text whenever it changes
+            nameLabels.get(i).setText(t.getSymbol() + " " + t.getName()
+                + "  (Acc: " + String.format("%.2f", t.getAccuracy()) + ")");
+        }
+    }
 }
