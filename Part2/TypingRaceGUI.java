@@ -257,7 +257,7 @@ public class TypingRaceGUI
         seat.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOUR),
             BorderFactory.createEmptyBorder(6, 4, 6, 4)));
-        seat.setBackground(COLOR_BG);
+        seat.setBackground(BG_COLOUR);
         seat.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
 
         // Sets up the text boxes and dropdown menus
@@ -473,5 +473,109 @@ public class TypingRaceGUI
         if (k.equals("Touchscreen")) return -0.05;
         if (k.equals("Stenography")) return 0.10;
         return 0.0;
+    }
+
+    // Race Window
+    /**
+     * Builds the window where the actual race happens.
+     * Includes a title at the top and a place for all the racer progress bars.
+     */
+    private JPanel buildRacePanel()
+    {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        panel.setBackground(BG_COLOUR);
+
+        JPanel top = new JPanel(new BorderLayout());
+        top.setOpaque(false);
+
+        JLabel title = new JLabel("Race in Progress");
+        title.setFont(new Font("Arial", Font.BOLD, 22));
+        title.setForeground(TEXT_COLOUR);
+        top.add(title, BorderLayout.WEST);
+
+        // Turn counter styled
+        turnLabel = new JLabel("Turn: 0");
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        turnLabel.setForeground(Color.WHITE);
+        turnLabel.setBackground(BUTTON_COLOUR);
+        turnLabel.setOpaque(true);
+        turnLabel.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
+        top.add(turnLabel, BorderLayout.EAST);
+
+        panel.add(top, BorderLayout.NORTH);
+
+        laneContainer = new JPanel();
+        laneContainer.setLayout(new BoxLayout(laneContainer, BoxLayout.Y_AXIS));
+        laneContainer.setBackground(BG_COLOUR);
+
+        // All lanes inside a wrapper to keep at top all times
+        JPanel laneWrapper = new JPanel(new BorderLayout());
+        laneWrapper.setBackground(BG_COLOUR);
+        laneWrapper.add(laneContainer, BorderLayout.NORTH);
+
+        // Scroll bar in case of lots of racers 
+        JScrollPane scroll = new JScrollPane(laneWrapper);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.getViewport().setBackground(BG_COLOUR);
+        panel.add(scroll, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    /** 
+     * Adds a progress bar, name, and status for every typist
+     * and clears the old lanes for fresh reset.
+     */
+    private void buildLanes()
+    {
+        laneContainer.removeAll();
+        progressBars = new ArrayList<JProgressBar>();
+        statusLabels = new ArrayList<JLabel>();
+        nameLabels = new ArrayList<JLabel>();
+
+        int max = passageText.length();
+
+        for (int i = 0; i < typists.size(); i++)
+        {
+            Typist t = typists.get(i);
+
+            // Each lane is a white frame with the typist's colour as the left border.
+            JPanel lane = new JPanel(new BorderLayout(10, 4));
+            lane.setBackground(Color.WHITE);
+            lane.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 5, 0, 0,
+                    LANE_COLORS[i % LANE_COLORS.length]),
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            lane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+
+            JLabel nameLabel = new JLabel(t.getSymbol() + " " + t.getName()
+                + "  (Acc: " + String.format("%.2f", t.getAccuracy()) + ")");
+            nameLabel.setPreferredSize(new Dimension(220, 24));
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
+            nameLabel.setForeground(TEXT_COLOUR);
+            lane.add(nameLabel, BorderLayout.WEST);
+            nameLabels.add(nameLabel);
+
+            JProgressBar bar = new JProgressBar(0, max);
+            bar.setValue(0);
+            bar.setStringPainted(true);
+            bar.setForeground(LANE_COLORS[i % LANE_COLORS.length]);
+            bar.setBackground(new Color(240, 245, 245));
+            lane.add(bar, BorderLayout.CENTER);
+            progressBars.add(bar);
+
+            JLabel status = new JLabel(" ");
+            status.setPreferredSize(new Dimension(120, 24));
+            status.setFont(new Font("Arial", Font.PLAIN, 12));
+            lane.add(status, BorderLayout.EAST);
+            statusLabels.add(status);
+
+            laneContainer.add(lane);
+            laneContainer.add(Box.createVerticalStrut(8));
+        }
+
+        laneContainer.revalidate();
+        laneContainer.repaint();
     }
 }
