@@ -96,4 +96,32 @@ public class TypingRaceGUI
     private ArrayList<String> leaderboardNames = new ArrayList<String>();
     private ArrayList<Integer> leaderboardPoints = new ArrayList<Integer>();
     private ArrayList<Integer> leaderboardCoins = new ArrayList<Integer>();
+
+    // Constructor and main method
+    public TypingRaceGUI()
+    {
+        frame = new JFrame("Typing Race Simulator");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(950, 720);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+
+        setupPanel = buildSetupPanel();
+        racePanel = buildRacePanel();
+
+        // Starts on the setup window
+        frame.setContentPane(setupPanel);
+    }
+ 
+    // Shows the window up on the screen
+    public void startRaceGUI()
+    {
+        frame.setVisible(true);
+    }
+
+    // Calls the start method and creates a new object
+    public static void main(String[] args)
+    {
+        new TypingRaceGUI().startRaceGUI();
+    }
 }
