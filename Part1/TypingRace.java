@@ -132,10 +132,10 @@ public class TypingRace
         if (winner != null) 
         {
             // Adjustment to winner Typist's accuracy value  
-            double oldAccuracy = winner.getAccuracy;
+            double oldAccuracy = winner.getAccuracy();
             winner.setAccuracy(oldAccuracy + WIN_ACCURACY_RISE);
 
-            System.out.println()
+            System.out.println();
             System.out.println("And the winner is... " + winner.getName() + "!");
             System.out.println("Final accuracy: " + winner.getAccuracy() + " (improved from " + oldAccuracy + ")");
         }
@@ -203,7 +203,7 @@ public class TypingRace
     {
         System.out.print('\u000C'); // Clear terminal
 
-        System.out.println("  TYPING RACE — passage length: " + passageLength + " chars");
+        System.out.println("  TYPING RACE - passage length: " + passageLength + " chars");
         multiplePrint('=', passageLength + 3);
         System.out.println();
 
@@ -282,5 +282,14 @@ public class TypingRace
             System.out.print(aChar);
             i++;
         }
+    }
+
+    public static void main(String[] args)
+    {
+        TypingRace race = new TypingRace(40);
+        race.addTypist(new Typist('1', "TURBOFINGERS", 0.85), 1);
+        race.addTypist(new Typist('2', "QWERTY_QUEEN", 0.60), 2);
+        race.addTypist(new Typist('3', "HUNT_N_PECK",  0.30), 3);
+        race.startRace();
     }
 }
