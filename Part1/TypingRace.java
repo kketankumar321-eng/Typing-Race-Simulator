@@ -81,6 +81,13 @@ public class TypingRace
         boolean finished = false;
         Typist winner = null;
 
+        // Checks if any seat is empty before starting the race to avoid NullPointer crashes
+        if (seat1Typist == null || seat2Typist == null || seat3Typist == null)
+        {
+            System.out.println("Race cannot be started, all three seats must be filled.");
+            return;
+        }
+
         // Reset all typists to the start of the passage
         seat1Typist.resetToStart();
         seat2Typist.resetToStart();
