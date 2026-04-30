@@ -354,4 +354,124 @@ public class TypingRaceGUI
             seatRows[i].setVisible(i < count);
         }
     }
+
+
+    /**
+     * Validates the inputs, builds the typist list, siwtches to race window
+     * Returns with error message if anything is wrong.
+     */
+    private void tryStartRace()
+    {
+        // Makes sure passage is long enough to start race
+        String passage = passageField.getText().trim();
+        if (passage.length() < 10)
+        {
+            JOptionPane.showMessageDialog(frame,"Passage must be at least 10 characters long.");
+            return;
+        }
+        passageText = passage;
+        autocorrectOn = autocorrectBox.isSelected();
+        caffeineOn = caffeineBox.isSelected();
+        nightShiftOn = nightShiftBox.isSelected();
+
+        int count = (Integer) typistCountDropdown.getSelectedItem();
+
+        // Resets all lists so data from previous races dont
+        // carry over to the current race and mess up
+        typists = new ArrayList<Typist>();
+        accessoriesList = new ArrayList<String>();
+        sponsorsList = new ArrayList<String>();
+        burnouts = new ArrayList<Integer>();
+        mistypes = new ArrayList<Integer>();
+        attempts = new ArrayList<Integer>();
+        mistypedThisTurn = new ArrayList<Boolean>();
+        finishOrder = new ArrayList<Integer>();
+
+        for (int i = 0; i < count; i++)
+        {
+            String name = nameFields[i].getText().trim();
+            if (name.length() == 0)
+            {
+                JOptionPane.showMessageDialog(frame,
+                    "Seat " + (i + 1) + ": name cannot be empty.");
+                return;
+            }
+
+            // Checks if the accuracy is a valid number
+            double accuracy;
+            try
+            {
+                accuracy = Double.parseDouble(accuracyFields[i].getText().trim());
+            }
+            catch (NumberFormatException ex)
+            {
+                JOptionPane.showMessageDialog(frame,
+                    "Seat " + (i + 1) + ": accuracy must be a number.");
+                return;
+            }
+
+            // Adding bonuses or debuffs based on the style or keyboard picked
+            accuracy += styleDelta((String) styleBoxes[i].getSelectedItem());
+            accuracy += keyboardDelta((String) keyboardBoxes[i].getSelectedItem());
+
+            // Night Shift modifier, small accuracy reduction for everyone
+            if (nightShiftOn)
+            {
+                accuracy -= 0.05;
+            }
+
+            // Using the seat number 1-6 as the same symbol on the window
+            char symbol = (char) ('1' + i);
+            Typist t = new Typist(symbol, name, accuracy);
+
+            typists.add(t);
+            accessoriesList.add((String) accessoryBoxes[i].getSelectedItem());
+            sponsorsList.add((String) sponsorBoxes[i].getSelectedItem());
+            burnouts.add(0);
+            mistypes.add(0);
+            attempts.add(0);
+            mistypedThisTurn.add(false);
+        }
+
+        raceStartMs = System.currentTimeMillis();
+        turnCount = 0;
+
+        buildLanes();
+        frame.setContentPane(racePanel);
+
+        int raceHeight = 130 + (count * 58);
+        frame.setSize(950, raceHeight);
+        frame.setLocationRelativeTo(null);
+
+        frame.revalidate();
+        frame.repaint();
+
+        // Stops any old timers before starting a new race
+        if (raceTimer != null)
+        {
+            raceTimer.stop();
+        }
+        raceTimer = new Timer(TURN_INTERVAL_MS, e -> doOneTurn());
+        raceTimer.start();
+    }
+
+    // Gives accuracy change depending on the typing style
+    private double styleDelta(String s)
+    {
+        if (s.equals("Touch Typist")) return 0.10;
+        if (s.equals("Hunt & Peck")) return -0.10;
+        if (s.equals("Phone Thumbs")) return -0.05;
+        if (s.equals("Voice-to-Text")) return 0.05;
+        return 0.0;
+    }
+
+    // Gives accuracy change depending on keyboard type
+    private double keyboardDelta(String k)
+    {
+        if (k.equals("Mechanical")) return 0.05;
+        if (k.equals("Membrane")) return 0.00;
+        if (k.equals("Touchscreen")) return -0.05;
+        if (k.equals("Stenography")) return 0.10;
+        return 0.0;
+    }
 }
