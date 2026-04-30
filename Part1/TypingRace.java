@@ -106,6 +106,28 @@ public class TypingRace
         }
 
         // TODO (Task 2a): Print the winner's name here
+
+        Typist winner = null;
+
+        // Stores and announces the winner once the race ends 
+        if (raceFinishedBy(seat1Typist))
+        {
+            winner = seat1Typist;
+        } 
+        else if (raceFinishedBy(seat2Typist)) 
+        {
+            winner = seat2Typist;
+        } 
+        else if (raceFinishedBy(seat3Typist)) 
+        {
+            winner = seat3Typist;
+        }
+
+        if (winner != null) 
+        {
+            System.out.println()
+            System.out.println("And the winner is... " + winner.getName() + "!");
+        }
     }
 
     /**
@@ -255,7 +277,7 @@ public class TypingRace
         while (i < times)
         {
             System.out.print(aChar);
-            i = i + 1;
+            i++;
         }
     }
 }
