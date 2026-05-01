@@ -6,6 +6,8 @@
 
 ## Part 1 — Textual Simulation
 
+From the TypingRaceSimulator folder:
+
 ### How to compile
 
 ```bash
@@ -27,20 +29,17 @@ in the terminal turn by turn until one typist finishes the passage.
 
 ### How to compile
 
-Open a terminal and navigate to the Part2 folder:
+From the TypingRaceSimulator folder:
 
 ```bash
-cd Part2
 javac Part1/Typist.java Part2/TypingRaceGUI.java -d Part2
 ```
 
-The `-cp ../Part1` flag tells Java where to find the Typist class from Part 1.
-Part 2 reuses it
 
 ### How to run
 
 ```bash
-java Part1/Typist.java Part2/TypingRaceGUI.java -d Part2
+java -cp Part2 TypingRaceGUI
 ```
 
 
@@ -48,14 +47,14 @@ java Part1/Typist.java Part2/TypingRaceGUI.java -d Part2
 
 1. Choose a passage from the dropdown (Short / Medium / Long) or type your own
 2. Tick the difficulty modifiers (Autocorrect / Caffeine / Night Shift)
-3. Select how many typists (2-6) using the dropdown
+3. Select how many typists you want (2-6) using the dropdown
 4. Fill in each typist's name, symbol, accuracy (0.0-1.0), colour, typing style, keyboard,
    accessory and sponsor
 5. Click Start Race
-6. Watch the animated progress bars with status labels, symbols, colour show burnouts and mistypes
-7. When a typist finishes, a results popup shows WPM, accuracy, earnings
+6. Race will be animated through progress bars with status labels, symbols, colour show burnouts and mistypes
+7. When a typist finishes, a results popup shows all the statistics: WPM, accuracy, earnings
    and the leaderboard
-8. Click OK to go back to the setup screen and run another race
+8. Click OK to go back to the setup screen
 
 ### Difficulty Modifiers
 
@@ -66,8 +65,8 @@ java Part1/Typist.java Part2/TypingRaceGUI.java -d Part2
 
 ### Customisation
 
-- Typing Style: affects accuracy (Touch Typist +0.10, Hunt & Peck -0.10, etc)
-- Keyboard: affects accuracy (Mechanical +0.05, Stenography +0.10, etc)
+- Typing Style: affects accuracy (Touch Typist +0.10, Hunt & Peck -0.10)
+- Keyboard: affects accuracy (Mechanical +0.05, Stenography +0.10)
 - Accessory: Wrist Support shortens burnout, Noise-Cancel HP halves mistype chance
 - Sponsor: KeyCorp pays +50 coins for finishing without burning out,
   TypeFast pays +100 coins for finishing first
